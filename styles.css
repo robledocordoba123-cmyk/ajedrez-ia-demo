@@ -16,6 +16,11 @@
   --tam: min(92vw, 560px);
 }
 
+/* Temas del tablero */
+:root[data-tema="madera"] { --clara: #f0d9b5; --oscura: #b58863; }
+:root[data-tema="oceano"] { --clara: #dee3e6; --oscura: #6f8fae; }
+:root[data-tema="marmol"] { --clara: #f2f1ee; --oscura: #a3a19b; }
+
 * { box-sizing: border-box; }
 
 body {
@@ -99,6 +104,8 @@ body {
 .casilla.oscura.jaque { background: radial-gradient(circle, var(--jaque) 0%, rgba(217,83,79,.6) 45%, transparent 75%), var(--oscura); }
 
 .pieza { position: relative; z-index: 1; transition: transform .12s ease; }
+.pieza.moviendo { z-index: 4; transition: none; }
+@media (prefers-reduced-motion: reduce) { .pieza, .pieza.moviendo { transition: none !important; } }
 .pieza.w { color: #fffaf0; text-shadow: 0 0 1px #1b1b1b, 0 0 1px #1b1b1b, 0 0 2px #1b1b1b, 0 2px 3px rgba(0,0,0,.35); }
 .pieza.b { color: #1d1a16; text-shadow: 0 1px 0 rgba(255,255,255,.25), 0 2px 3px rgba(0,0,0,.3); }
 .casilla:hover .pieza { transform: translateY(-2px); }

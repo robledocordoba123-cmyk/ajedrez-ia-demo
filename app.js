@@ -15,7 +15,7 @@ const ui = {
   capturasArriba: $('capturasArriba'), capturasAbajo: $('capturasAbajo'),
   relojArriba: $('relojArriba'), relojAbajo: $('relojAbajo'),
   btnNueva: $('btnNueva'), btnDeshacer: $('btnDeshacer'), btnGirar: $('btnGirar'),
-  selModo: $('selModo'), selNivel: $('selNivel'), selColor: $('selColor'), selTiempo: $('selTiempo'),
+  selModo: $('selModo'), selTema: $('selTema'), selNivel: $('selNivel'), selColor: $('selColor'), selTiempo: $('selTiempo'),
   campoNivel: $('campoNivel'), campoColor: $('campoColor'),
 };
 
@@ -35,6 +35,7 @@ const estado = {
   relojes: { w: 0, b: 0 },
   ultimoTic: 0,
   finPorTiempo: null,
+  animar: null,
 };
 
 // ---------- Partida ----------
@@ -78,6 +79,7 @@ function esTurnoHumano() {
 function jugar(movimiento) {
   const hecho = estado.juego.move(movimiento);
   if (!hecho) return false;
+  estado.animar = hecho;
   if (estado.tiempoTotal && estado.juego.history().length === 1) estado.ultimoTic = performance.now();
   estado.seleccion = null;
   dibujar();
@@ -186,11 +188,38 @@ function dibujarTablero() {
       if (i === 7) html += `<span class="coord col">${col}</span>`;
       if (pieza) html += `<span class="pieza ${pieza.color}">${glifo(pieza.type)}</span>`;
       b.innerHTML = html;
-      b.setAttribute('aria-label', casilla + (pieza ? `, ${NOMBRE[pieza.type]} ${pieza.color === 'w' ? 'blanco' : 'negro'}` : ''));
+      const femenina = pieza && (pieza.type === 'q' || pieza.type === 'r');
+      const color = pieza && (pieza.color === 'w' ? (femenina ? 'blanca' : 'blanco') : (femenina ? 'negra' : 'negro'));
+      b.setAttribute('aria-label', casilla + (pieza ? `, ${NOMBRE[pieza.type]} ${color}` : ''));
       b.onclick = () => clicCasilla(casilla);
       ui.tablero.appendChild(b);
     });
   });
+  if (estado.animar) animarJugada(estado.animar);
+  estado.animar = null;
+}
+
+// Desliza la pieza desde su casilla de origen hasta la de destino.
+function animarJugada(jugada) {
+  const desde = ui.tablero.querySelector(`[data-casilla="${jugada.from}"]`);
+  const hasta = ui.tablero.querySelector(`[data-casilla="${jugada.to}"]`);
+  const pieza = hasta && hasta.querySelector('.pieza');
+  if (!desde || !pieza || matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const a = desde.getBoundingClientRect();
+  const b = hasta.getBoundingClientRect();
+  hasta.style.overflow = 'visible';
+  hasta.style.zIndex = '3';
+  pieza.classList.add('moviendo');
+  pieza.style.transform = `translate(${a.left - b.left}px, ${a.top - b.top}px)`;
+  pieza.getBoundingClientRect(); // fuerza el cálculo antes de animar
+  pieza.classList.remove('moviendo');
+  pieza.style.transition = 'transform .22s cubic-bezier(.2,.8,.3,1)';
+  pieza.style.transform = '';
+  pieza.addEventListener('transitionend', () => {
+    pieza.style.transition = '';
+    hasta.style.overflow = '';
+    hasta.style.zIndex = '';
+  }, { once: true });
 }
 
 function buscarRey(color) {
@@ -304,6 +333,14 @@ setInterval(() => {
 ui.btnNueva.onclick = nuevaPartida;
 ui.btnDeshacer.onclick = deshacer;
 ui.btnGirar.onclick = () => { estado.girado = !estado.girado; dibujar(); };
+function aplicarTema(tema) {
+  document.documentElement.dataset.tema = tema;
+  try { localStorage.setItem('jaque-tema', tema); } catch { /* sin almacenamiento: no pasa nada */ }
+}
+try { ui.selTema.value = localStorage.getItem('jaque-tema') || 'salvia'; } catch { /* usa el tema por defecto */ }
+aplicarTema(ui.selTema.value);
+ui.selTema.onchange = () => aplicarTema(ui.selTema.value);
+
 ui.selModo.onchange = () => {
   const contraIA = ui.selModo.value === 'ia';
   ui.campoNivel.hidden = !contraIA;
