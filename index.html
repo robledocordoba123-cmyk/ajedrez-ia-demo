@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Jaque · Ajedrez con IA</title>
+  <meta name="description" content="Juega ajedrez en el navegador contra una IA con 3 niveles o contra otra persona. Todas las reglas oficiales, reloj e historial de jugadas." />
+  <meta name="theme-color" content="#14202b" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>♞</text></svg>" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,800&family=Manrope:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="cabecera">
+    <div class="marca">
+      <span class="marca-icono" aria-hidden="true">♞&#xFE0E;</span>
+      <div>
+        <h1>Jaque</h1>
+        <p>Ajedrez en el navegador · contra la IA o entre dos</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="mesa">
+    <section class="zona-tablero" aria-label="Tablero">
+      <div class="jugador jugador-arriba" id="jugadorArriba">
+        <div class="jugador-info">
+          <span class="jugador-nombre" id="nombreArriba">IA</span>
+          <span class="capturas" id="capturasArriba"></span>
+        </div>
+        <span class="reloj" id="relojArriba">--:--</span>
+      </div>
+
+      <div class="marco">
+        <div class="tablero" id="tablero" role="grid" aria-label="Tablero de ajedrez"></div>
+        <div class="coronacion" id="coronacion" hidden>
+          <p>Coronar peón</p>
+          <div class="coronacion-opciones" id="coronacionOpciones"></div>
+        </div>
+      </div>
+
+      <div class="jugador jugador-abajo" id="jugadorAbajo">
+        <div class="jugador-info">
+          <span class="jugador-nombre" id="nombreAbajo">Tú</span>
+          <span class="capturas" id="capturasAbajo"></span>
+        </div>
+        <span class="reloj" id="relojAbajo">--:--</span>
+      </div>
+    </section>
+
+    <aside class="panel">
+      <div class="estado" id="estado" role="status" aria-live="polite">Mueven las blancas</div>
+
+      <div class="acciones">
+        <button class="boton boton-principal" id="btnNueva">Nueva partida</button>
+        <button class="boton" id="btnDeshacer">Deshacer</button>
+        <button class="boton" id="btnGirar" title="Girar tablero">Girar</button>
+      </div>
+
+      <details class="ajustes" open>
+        <summary>Ajustes de la partida</summary>
+        <label>Modo
+          <select id="selModo">
+            <option value="ia">Contra la IA</option>
+            <option value="dos">Dos jugadores (mismo dispositivo)</option>
+          </select>
+        </label>
+        <label id="campoNivel">Nivel de la IA
+          <select id="selNivel">
+            <option value="facil">Fácil</option>
+            <option value="medio" selected>Medio</option>
+            <option value="dificil">Difícil</option>
+          </select>
+        </label>
+        <label id="campoColor">Juegas con
+          <select id="selColor">
+            <option value="w">Blancas</option>
+            <option value="b">Negras</option>
+          </select>
+        </label>
+        <label>Reloj
+          <select id="selTiempo">
+            <option value="0">Sin reloj</option>
+            <option value="3">3 minutos</option>
+            <option value="5" selected>5 minutos</option>
+            <option value="10">10 minutos</option>
+          </select>
+        </label>
+        <p class="nota">Los cambios se aplican al iniciar una nueva partida.</p>
+      </details>
+
+      <div class="historial">
+        <h2>Jugadas</h2>
+        <ol id="historial"></ol>
+      </div>
+    </aside>
+  </main>
+
+  <footer class="pie">Hecho por Manuela Córdoba · Reglas completas: enroque, captura al paso, coronación, jaque mate y tablas</footer>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
